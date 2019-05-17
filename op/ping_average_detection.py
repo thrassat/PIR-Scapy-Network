@@ -25,7 +25,7 @@ def check_ping(host, count=3):
 if __name__=="__main__": 
 
     #ENTRER LE SEUIL MAXIMUM ICI !! 
-    maxtime=80000 
+    maxtime=800000
     t1 = 0 
     t2 = 0 
     t3 = 0 

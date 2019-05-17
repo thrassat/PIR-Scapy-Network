@@ -36,15 +36,15 @@ def scan(pkt):
             
             
 def sniffing_pcap_telnet():
-    nport = input("Numéro de port utilisé pour telnet: ")		
+    nport = input("Numéro de port utilisé pour telnet (23 par défault): ")		
     sniff(iface = interfaceobj, prn = scan , store = 0) #PROBLEME LE SNIFF EST BLOQUANT !!!	
-    #dois faire : appel sur telent en direct , recup tout dans un pcap ! (voir meme trié ! ) 
+    #dois faire : appel sur telent en direct , ??recup tout dans un pcap ! (voir meme trié ! ) ??
     
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::            
 #ping average : Besoin d'addr IP objet et interface sniff 
 
-#get_ping renvoi une moyenne du temps de ping en ms sur 3 pings sucessifs 
+#get_ping renvoi une moyenne du temps de ping en ms sur 3 pings sucessifs /// RECUPERER MAXTIME ICI
 
 def get_ping(host, interface, count=3):
   packet = Ether()/IP(dst=host)/ICMP()
@@ -77,5 +77,7 @@ if __name__=='__main__':
     
 #NOTES : Thread ? Sinon bidouille de mon ping ou 2 terminal 
 #           Ou récupérer nos variables maximum ? Fichier ? Print et entree de detection 
+
 #           Faire le script qui tourne sur le pcap final (code yuheng, ftp bruteforce, peut etre d'autre )
 #           Fichier de détection faire rentrer les valeurs (avec input au début et apres appel des bons codes ) (un fichier en direct un fichier en final sur le pcap) 
+#           Faire les meme calculs sur les heuristiques en direct deja et peut etre meme celle d'apres (ex : si depasse 10% de cette valeur ... trouver d'autre trucs ..) (une fonction qui tourne sur tout les max) 
