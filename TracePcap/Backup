@@ -1,0 +1,53 @@
+F = packet['TCP'].flags    # this should give you an integer
+print("flags is "+str(F))
+# FIN flag activated
+if F & 'A':
+  print('')
+  print("Get thr ACK ++++++++++++++++"+"Compteur  is "+str(i))
+
+
+if F & 'S':
+
+
+  if  i<lengthPackets-1 and  packets[i].time<=prochainTimeSYN and packets[i].time>=startTimeSYN :
+    #Juste la 1ere fois, le nmb de paquets
+
+    print('')
+    print("+++++++++++++++++++++++++Get SYN ++++++++++++++++"+ " Compteur  is "+str(i))
+    print('')
+    print(" ***No. "+str(nmbPaquetSYN)+"SYN dans l'intervalle"  )
+    nmbPaquetSYN+=1
+  elif packets[i].time>=prochainTimeSYN and packets[i].time>=startTimeSYN:
+    listFrequenceSYN.append(nmbPaquetSYN)
+    print("Capter        "+str(listFrequenceSYN[cmpSYN])+"SYN  entre  "+str(startTimeSYN)+ " s et  "+str(prochainTimeSYN)+ " s $$$$$$$$")
+    nmbPaquetSYN=1
+    startTimeSYN=prochainTimeSYN
+    prochainTimeSYN+=1
+    cmpSYN+=1
+    while (packets[i].time>=prochainTimeSYN):
+      vide = 0
+      listFrequenceSYN.append(vide)
+      print(" Capter        "+str(listFrequenceSYN[cmpSYN])+"SYN entre"+str(startTimeSYN)+ " s et  "+str(prochainTimeSYN)+ " s $$$$$$$$$$")
+      nmbPaquetSYN=1
+      startTimeSYN=prochainTimeSYN
+      prochainTimeSYN+=1
+      cmpSYN+=1
+  else :
+    print("ERROR")
+
+
+
+
+
+
+
+
+
+  if  packet.time-startTimeSYN >=1:
+    listFrequenceSYN.append(iSYN)
+    if cmpSYN>=1:
+      #print(" ************Capter     "+str(iSYN-listFrequenceSYN[cmpSYN-1])+"SYN    en  "+str( packet.time-startTimeSYN)+ " s")
+      listFrequenceSYN.append(iSYN-listFrequenceSYN[cmpSYN-1])
+    startTimeSYN=packets[i].time
+    cmpSYN+=1
+    iSYN+=1
