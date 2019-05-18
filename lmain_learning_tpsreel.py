@@ -1,7 +1,6 @@
 
 from scapy.all import *
 import sys
-from interruptingcow import timeout 
 import time
 
 learned_telnet = 0

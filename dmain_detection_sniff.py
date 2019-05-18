@@ -10,7 +10,6 @@ from scapy.all import *
 
 from scapy.all import *
 import sys
-from interruptingcow import timeout 
 import time
 
 count_telnet = 0
