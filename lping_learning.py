@@ -4,13 +4,7 @@ import sys
 from interruptingcow import timeout 
 import time
 
-try:
-    interfaceobj = input("[*] Enter Desired Interface: ")
-    ipobj = input("[*] Enter IP IoT: ")
-except KeyboardInterrupt:
-    print("[*] User Requested Shutdown...")
-    print("[*] Exiting...")
-    sys.exit(1)
+
 
 #ping average : Besoin d'addr IP objet et interface sniff 
 
@@ -47,12 +41,21 @@ def check_ping(host, interface):
         
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
 #Ok ça marche, voir comment on récupère le maxtime final 
-check_ping(ipobj,interfaceobj)
-  
-try:
-    while True: 
-        pass
-except KeyboardInterrupt:
-    print(" :::::::::::::: Fin de l'apprentissgae :::::::::::::::::::::::::::::")
-    print("La valeur maximale de maxtime a été :",maxtime)
-    sys.exit() 
+if __name__=="__main__": 
+    try:
+        interfaceobj = input("[*] Enter Desired Interface: ")
+        ipobj = input("[*] Enter IP IoT: ")
+    except KeyboardInterrupt:
+        print("[*] User Requested Shutdown...")
+        print("[*] Exiting...")
+        sys.exit(1)
+   
+    check_ping(ipobj,interfaceobj)
+    
+    try:
+        while True: 
+            pass
+    except KeyboardInterrupt:
+        print(" :::::::::::::: Fin de l'apprentissgae :::::::::::::::::::::::::::::")
+        print("La valeur maximale de maxtime a été :",maxtime)
+        sys.exit() 
