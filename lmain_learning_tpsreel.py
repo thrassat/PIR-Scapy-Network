@@ -10,6 +10,7 @@ learned_telnet = 0
 try:
     interfaceobj = input("[*] Enter Desired Interface: ")
     ipobj = input("[*] Enter IP IoT: ")
+    nport = input("Numéro de port utilisé pour telnet (23 par défault): ")		
 except KeyboardInterrupt:
     print("[*] User Requested Shutdown...")
     print("[*] Exiting...")
@@ -26,7 +27,7 @@ def scan(pkt):
     global learned_telnet
     
     #ecriture dans le fichier pcap 
-     wrpcap('learning.pcap', pkt, append=True)
+    wrpcap('learning.pcap', pkt, append=True)
      
     #detection en temps reel de brut force telnet 
     if IP in pkt:
@@ -39,9 +40,9 @@ def scan(pkt):
             
             
 def sniffing_pcap_telnet():
-    nport = input("Numéro de port utilisé pour telnet (23 par défault): ")		
     sniff(iface = interfaceobj, prn = scan , store = 0) 
-    #dois faire : appel sur telent en direct ,recup tout dans un pcap ! (voir meme trié ! ) OK? A TESTER 
+    #tel net marche, récuperer learned_telent!!! 
+    #,recup tout dans un pcap ! (voir meme trié ! ) OK? A TESTER 
     
 
 
@@ -50,6 +51,13 @@ def sniffing_pcap_telnet():
 
 if __name__=='__main__': 
     sniffing_pcap_telnet() 
+    try:
+        while True: 
+            pass
+    except KeyboardInterrupt:
+        print(" :::::::::::::: Fin de l'apprentissgae :::::::::::::::::::::::::::::")
+        print("La valeur maximale de learned_telnet a été :",learned_telnet)
+        sys.exit() 
     
 #NOTES : Thread ? 2 éxécution parallèle pour l'instant . 
 #           Ou récupérer nos variables maximum ? Fichier ? Print et entree de detection 
