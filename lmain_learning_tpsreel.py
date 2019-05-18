@@ -4,7 +4,6 @@ import sys
 from interruptingcow import timeout 
 import time
 
-count_telnet = 0
 learned_telnet = 0
 
 try:
