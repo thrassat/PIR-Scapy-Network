@@ -1,8 +1,7 @@
 
 from scapy.all import *
 import sys
-from interruptingcow import timeout 
-import time
+
 
 
 

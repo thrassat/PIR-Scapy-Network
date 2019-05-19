@@ -13,7 +13,7 @@ import plotly.graph_objs as go
     #            print()
 
 
-packets = rdpcap('atkpart.pcap')
+packets = rdpcap('TracePcap/SYN.pcap')
 startCaptureTime = packets[0].time
 
 startTime=packets[0].time
@@ -45,7 +45,7 @@ listFrequence = []
 cmpSYN = 0
 nmbPaquetSYN = 0
 listFrequenceSYN = []
-nmbStandard = 15
+nmbStandard = float(input(" Entrer la moyenne de frequence de syn/sec : "))
 
 nmbPaquetACK = 0
 cmpACK = 0
@@ -99,111 +99,111 @@ for packet in packets:
 	#		listFrequence.append(i-listFrequence[cmp-1])
 	#	startTime=packets[i].time
 	#	cmp+=1
-    if TCP in packet:
-    	print("******START*****"  )
-    	print("****************")
-    	print("****************")
-
-
-    	F = packet['TCP'].flags    # this should give you an integer
-    	Payload = packet['TCP'].payload
-    	print("flags is "+str(F))
+	if TCP in packet:
+                print("******START*****"  )
+                print("****************")
+                print("****************")
+
+
+                F = packet['TCP'].flags    # this should give you an integer
+                Payload = packet['TCP'].payload
+                print("flags is "+str(F))
 
 
-    	if  i<lengthPackets-1 and  packets[i].time<=prochainTime and packets[i].time>=startTime :
-    		#Juste la 1ere fois, le nmb de paquets
+                if  (i<lengthPackets-1 and  packets[i].time<=prochainTime and packets[i].time>=startTime):
+                    #Juste la 1ere fois, le nmb de paquets
 
-    		print(" ***Capter juste un paquet normal "  )
-    		print(" ***No. "+str(nmbPaquet)+" dans l'intervalle"  )
-    		nmbPaquet+=1
+                        print(" ***Capter juste un paquet normal "  )
+                        print(" ***No. "+str(nmbPaquet)+" dans l'intervalle"  )
+                        nmbPaquet+=1
 
 
-    		if F & 'A' and F & 'S':
-    			print('')
-    			print("+++++++++++++++++++++Get  SYN / ACK  ++++++++++++++++"+ " Compteur  is "+str(i))
-    			print('')
-    			print(" ***No. "+str(nmbPaquetSYN)+"SYN dans l'intervalle"  )
-    			#nmbPaquetSYN+=1
-    			#nmbPaquetACK+=1
+                        if F & 'A' and F & 'S':
+                                print('')
+                                print("+++++++++++++++++++++Get  SYN / ACK  ++++++++++++++++"+ " Compteur  is "+str(i))
+                                print('')
+                                print(" ***No. "+str(nmbPaquetSYN)+"SYN dans l'intervalle"  )
+                            #nmbPaquetSYN+=1
+                            #nmbPaquetACK+=1
 
-    		elif F & 'A':
-    			print('')
-    			print("Get thr ACK "+"Compteur  is "+str(i))
-    			nmbPaquetACK+=1
+                        elif F & 'A':
+                                print('')
+                                print("Get thr ACK "+"Compteur  is "+str(i))
+                                nmbPaquetACK+=1
 
-    		elif F & 'S':
-    			print('')
-    			print("+++++++++++++++++++++++++Get SYN ++++++++++++++++"+ " Compteur  is "+str(i))
-    			print('')
-    			print(" ***No. "+str(nmbPaquetSYN)+"SYN dans l'intervalle"  )
-    			nmbPaquetSYN+=1
-    		else:
-    			print('Other Flag')
+                        elif F & 'S':
+                            print('')
+                            print("+++++++++++++++++++++++++Get SYN ++++++++++++++++"+ " Compteur  is "+str(i))
+                            print('')
+                            print(" ***No. "+str(nmbPaquetSYN)+"SYN dans l'intervalle"  )
+                            nmbPaquetSYN+=1
+                        else:
+                            print('Other Flag')
 
 
-    	elif packets[i].time>=prochainTime and packets[i].time>=startTime:
-    		listFrequence.append(nmbPaquet)
-    		print("*********************************")
-    		print(" ************Capter        "+str(listFrequence[cmp])+" paquets entre  "+str(startTime)+ " s et  "+str(prochainTime)+ " s ************")
-    		nmbPaquet=1
-    		startTime=prochainTime
-    		prochainTime+=ecartSensibleSYN
-    		cmp+=1
-    		# Part SYN
-    		listFrequenceSYN.append(nmbPaquetSYN)
-    		print("Capter  "+str(listFrequenceSYN[cmpSYN])+"SYN "+ " $$$$$$$$")
-    		if F & 'S':
-    			nmbPaquetSYN=1
-    		else :
-    			nmbPaquetSYN=0
-    		cmpSYN+=1
+                elif packets[i].time>=prochainTime and packets[i].time>=startTime:
+                        listFrequence.append(nmbPaquet)
+                        print("*********************************")
+                        print(" ************Capter        "+str(listFrequence[cmp])+" paquets entre  "+str(startTime)+ " s et  "+str(prochainTime)+ " s ************")
+                        nmbPaquet=1
+                        startTime=prochainTime
+                        prochainTime+=ecartSensibleSYN
+                        cmp+=1
+                        # Part SYN
+                        listFrequenceSYN.append(nmbPaquetSYN)
+                        print("Capter  "+str(listFrequenceSYN[cmpSYN])+"SYN "+ " $$$$$$$$")
+                        if F & 'S':
+                                nmbPaquetSYN=1
+                        else :
+                                nmbPaquetSYN=0
+                        cmpSYN+=1
 
-    		# Part ACK
-    		listFrequenceACK.append(nmbPaquetACK)
-    		print("Capter  "+str(listFrequenceACK[cmpACK])+"ACK "+ " $$$$$$$$")
-    		if F & 'A':
-    			nmbPaquetACK=1
-    		else :
-    			nmbPaquetACK=0
-    		cmpACK+=1
+                    # Part ACK
+                        listFrequenceACK.append(nmbPaquetACK)
+                        print("Capter  "+str(listFrequenceACK[cmpACK])+"ACK "+ " $$$$$$$$")
+                        if F & 'A':
+                                nmbPaquetACK=1
+                        else :
+                                nmbPaquetACK=0
+                        cmpACK+=1
 
 
 
 
-    		while (packets[i].time>=prochainTime):
-    			vide = 0
+                        while (packets[i].time>=prochainTime):
+                                vide = 0
 
-    			listFrequence.append(vide)
-    			print(" ************Capter        "+str(listFrequence[cmp])+" paquets entre  "+str(startTime)+ " s et  "+str(prochainTime)+ " s ***********")
-    			nmbPaquet=1
-    			startTime=prochainTime
-    			prochainTime+=ecartSensibleSYN
-    			cmp+=1
+                                listFrequence.append(vide)
+                                print(" ************Capter        "+str(listFrequence[cmp])+" paquets entre  "+str(startTime)+ " s et  "+str(prochainTime)+ " s ***********")
+                                nmbPaquet=1
+                                startTime=prochainTime
+                                prochainTime+=ecartSensibleSYN
+                                cmp+=1
 
-    			##Part SYN
-    			listFrequenceSYN.append(vide)
-    			print(" Capter   "+str(listFrequenceSYN[cmpSYN])+"SYN "+  " $$$$$$$$$$")
-    			if F & 'S':
-    				nmbPaquetSYN=1
-    			else :
-    				nmbPaquetSYN=0
-    			cmpSYN+=1
+                            ##Part SYN
+                                listFrequenceSYN.append(vide)
+                                print(" Capter   "+str(listFrequenceSYN[cmpSYN])+"SYN "+  " $$$$$$$$$$")
+                                if F & 'S':
+                                        nmbPaquetSYN=1
+                                else :
+                                        nmbPaquetSYN=0
+                                cmpSYN+=1
 
-    			##Part ACK
-    			listFrequenceACK.append(vide)
-    			print(" Capter   "+str(listFrequenceACK[cmpACK])+"ACK "+  " $$$$$$$$$$")
-    			if F & 'A':
-    				nmbPaquetACK=1
-    			else :
-    				nmbPaquetACK=0
-    			cmpACK+=1
+                            ##Part ACK
+                                listFrequenceACK.append(vide)
+                                print(" Capter   "+str(listFrequenceACK[cmpACK])+"ACK "+  " $$$$$$$$$$")
+                                if F & 'A':
+                                        nmbPaquetACK=1
+                                else :
+                                        nmbPaquetACK=0
+                                cmpACK+=1
 
 
 
 
 
-    	else :
-    		print("ERROR")
+                else:
+                        print("ERROR")
 
 
 
@@ -211,62 +211,62 @@ for packet in packets:
 
 
 
-        #
-        #Part pour FTPPassword
-        #
-        #
-    	if  i<lengthPackets-1 and  packets[i].time<=prochainTimeFTP and packets[i].time>=startTimeFTP :
+            #
+            #Part pour FTPPassword
+            #
+            #
+                if  (i<lengthPackets-1 and  packets[i].time<=prochainTimeFTP and packets[i].time>=startTimeFTP):
 
 
 
-    		if "Password required for" in (str(Payload)):
-    			print('')
-    			print("+++++++++++++++++++++++++Get FTPPassword ++++++++++++++++"+ " Compteur  is "+str(i))
-    			print('')
-    			nmbPaquetFTPPassword+=1
+                        if "Password required for" in (str(Payload)):
+                                print('')
+                                print("+++++++++++++++++++++++++Get FTPPassword ++++++++++++++++"+ " Compteur  is "+str(i))
+                                print('')
+                                nmbPaquetFTPPassword+=1
 
 
 
-    	elif packets[i].time>=prochainTimeFTP and packets[i].time>=startTimeFTP:
+                elif (packets[i].time>=prochainTimeFTP and packets[i].time>=startTimeFTP):
 
-    		startTimeFTP=prochainTimeFTP
-    		prochainTimeFTP+=ecartSensibleFTP
+                        startTimeFTP=prochainTimeFTP
+                        prochainTimeFTP+=ecartSensibleFTP
 
 
-    		# Part FTPPassword
-    		listFrequenceFTPPassword.append(nmbPaquetFTPPassword)
-    		print("Capter  "+str(listFrequenceFTPPassword[cmpFTPPassword])+"FTPPassword "+ " $$$$$$$$")
-    		if "Password required for" in (Payload):
-    			nmbPaquetFTPPassword=1
-    		else :
-    			nmbPaquetFTPPassword=0
-    		cmpFTPPassword+=1
+                    # Part FTPPassword
+                        listFrequenceFTPPassword.append(nmbPaquetFTPPassword)
+                        print("Capter  "+str(listFrequenceFTPPassword[cmpFTPPassword])+"FTPPassword "+ " $$$$$$$$")
+                        if "Password required for" in (Payload):
+                                nmbPaquetFTPPassword=1
+                        else :
+                                nmbPaquetFTPPassword=0
+                        cmpFTPPassword+=1
 
 
-    		while (packets[i].time>=prochainTimeFTP):
-    			vide = 0
+                        while (packets[i].time>=prochainTimeFTP):
+                                vide = 0
 
-    			listFrequenceftp.append(vide)
-    			print(" ************Capter        "+str(listFrequenceftp[cmp])+" paquets entre  "+str(startTimeFTP)+ " s et  "+str(prochainTimeFTP)+ " s ***********")
+                                listFrequenceftp.append(vide)
+                                print(" ************Capter        "+str(listFrequenceftp[cmp])+" paquets entre  "+str(startTimeFTP)+ " s et  "+str(prochainTimeFTP)+ " s ***********")
 
-    			startTimeFTP=prochainTimeFTP
-    			prochainTimeFTP+=ecartSensibleFTP
+                                startTimeFTP=prochainTimeFTP
+                                prochainTimeFTP+=ecartSensibleFTP
 
 
 
 
-    			##Part FTPPassword
-    			listFrequenceFTPPassword.append(vide)
-    			print(" Capter   "+str(listFrequenceFTPPassword[cmpFTPPassword])+"FTPPassword "+  " $$$$$$$$$$")
-    			if "Password required for" in (Payload):
-    				nmbPaquetFTPPassword=1
-    			else :
-    				nmbPaquetFTPPassword=0
-    			cmpFTPPassword+=1
+                            ##Part FTPPassword
+                                listFrequenceFTPPassword.append(vide)
+                                print(" Capter   "+str(listFrequenceFTPPassword[cmpFTPPassword])+"FTPPassword "+  " $$$$$$$$$$")
+                                if "Password required for" in (Payload):
+                                        nmbPaquetFTPPassword=1
+                                else :
+                                        nmbPaquetFTPPassword=0
+                                cmpFTPPassword+=1
 
 
-    	else :
-    		print("ERROR")
+                else:
+                        print("ERROR")
 
 
 
@@ -278,26 +278,26 @@ for packet in packets:
 
 
 
-    	FirstTime = packets[i].time
-    	if i<lengthPackets-1:
-    		print("Cmp is "+str(i))
-    		i += 1
+                FirstTime = packets[i].time
+                if i<lengthPackets-1:
+                        print("Cmp is "+str(i))
+                        i += 1
 
-    	else:
-    		print(i)
-    	SecondTime = packets[i].time
+                else:
+                        print(i)
+                SecondTime = packets[i].time
 
-    	print("Protocole is  "+str(packets[i].proto))
-    	print("Maintenant ce paquet son TIME IS "+ str(packet.time))
-    	print("TIME IS "+ str(SecondTime-FirstTime))
-    	print("Source is "+packet[IP].src)
-    	print("Desti is "+packet[IP].dst)
-    	print("******END*******")
+                print("Protocole is  "+str(packets[i].proto))
+                print("Maintenant ce paquet son TIME IS "+ str(packet.time))
+                print("TIME IS "+ str(SecondTime-FirstTime))
+                print("Source is "+packet[IP].src)
+                print("Desti is "+packet[IP].dst)
+                print("******END*******")
 
-    	print("****************")
-    	print("****************")
-    	print("")
-    	print("")
+                print("****************")
+                print("****************")
+                print("")
+                print("")
 
 
 ####################
