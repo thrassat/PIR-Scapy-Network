@@ -9,7 +9,7 @@ import plotly.graph_objs as go
 
 
 
-packets = rdpcap('TracePcap/bruteforceFTP.pcap')
+packets = rdpcap('TracePcap/SYN.pcap')
 startCaptureTime = packets[0].time
 
 startTime=packets[0].time
@@ -35,18 +35,33 @@ i = 0
 iSYN = 1
 cmp = 0
 nmbPaquet = 0
+listFrequence = []
+
+
 cmpSYN = 0
 nmbPaquetSYN = 0
+listFrequenceSYN = []
+
+nmbPaquetACK = 0
+cmpACK = 0
+listFrequenceACK = []
+
 
 cmpFTPPassword = 0
 nmbPaquetFTPPassword = 0
-
-
-global maxNmbSYN
-
-listFrequence = []
-listFrequenceSYN = []
 listFrequenceFTPPassword = []
+
+
+maxNmbSYNApp=0
+meanNmbSYN=0.0
+varianceNmbSYN=0.0
+nmbStandardApp =0.0
+
+
+
+
+
+
 
 
 
@@ -98,10 +113,19 @@ for packet in packets:
 		nmbPaquet+=1
 
 
+		if F & 'A' and F & 'S':
+			print('')
+			print("+++++++++++++++++++++Get  SYN / ACK  ++++++++++++++++"+ " Compteur  is "+str(i))
+			print('')
+			print(" ***No. "+str(nmbPaquetSYN)+"SYN dans l'intervalle"  )
+			#nmbPaquetSYN+=1
+			#nmbPaquetACK+=1
 
-		if F & 'A':
+		elif F & 'A':
 			print('')
 			print("Get thr ACK "+"Compteur  is "+str(i))
+			nmbPaquetACK+=1
+
 		elif F & 'S':
 			print('')
 			print("+++++++++++++++++++++++++Get SYN ++++++++++++++++"+ " Compteur  is "+str(i))
@@ -129,6 +153,14 @@ for packet in packets:
 			nmbPaquetSYN=0
 		cmpSYN+=1
 
+		# Part ACK
+		listFrequenceACK.append(nmbPaquetACK)
+		print("Capter  "+str(listFrequenceACK[cmpACK])+"ACK "+ " $$$$$$$$")
+		if F & 'A':
+			nmbPaquetACK=1
+		else :
+			nmbPaquetACK=0
+		cmpACK+=1
 
 
 
@@ -151,6 +183,18 @@ for packet in packets:
 			else :
 				nmbPaquetSYN=0
 			cmpSYN+=1
+
+			##Part ACK
+			listFrequenceACK.append(vide)
+			print(" Capter   "+str(listFrequenceACK[cmpACK])+"ACK "+  " $$$$$$$$$$")
+			if F & 'A':
+				nmbPaquetACK=1
+			else :
+				nmbPaquetACK=0
+			cmpACK+=1
+
+
+
 
 
 	else :
@@ -248,66 +292,98 @@ for packet in packets:
 	print("****************")
 	print("")
 	print("")
-	#lambda="lambda pcap:IP in pcap and UDP in pcap and pcap[IP].src=='192.168.1.1' and pcap[UDP].sport==80"
 
 
+####################
+#La partie Analyse
+####################
 
 
-	#packet.show()
+#Variance
+def dev(numbers, mean):
+    sdev = 0.0
+    for num in numbers:
+        sdev = sdev + (num-mean)**2
+    return pow(sdev/(len(numbers)-1), 0.5)
 
+#Calculer la moyenne
+def mean(numbers):
+    s = 0.0
+    for num in numbers:
+        s = s + num
+    return s/len(numbers)
+
+#la valeur au milieu
+def median(numbers):
+    sorted(numbers)     #sorted（)
+    size = len(numbers)
+    if size%2 == 0:
+        med = (numbers[size//2-1] + numbers[size//2]) / 2
+    else:
+        med = numbers[size//2]
+    return med
 
 
 def print_SYNList():
-    print("listFrequenceSYN")
-    print(listFrequenceSYN)
+	print("listFrequenceSYN")
+	print(listFrequenceSYN)
+	maxNmbSYN = max(listFrequenceSYN)
+	print("Max is"+str(maxNmbSYN))
+	print("Valeur moyenne  is "+str(mean(listFrequenceSYN)))
+	print("Variance is  "+str(dev(listFrequenceSYN,mean(listFrequenceSYN))))
+	print("Valeur au milieu is  "+str(median(listFrequenceSYN)))
 
-    maxNmbSYN = max(listFrequenceSYN)
-    print("Max is"+str(maxNmbSYN))
-    for freSYN in listFrequenceSYN:
-        print(str(freSYN))
+	nmbStandard = (mean(listFrequenceSYN)+median(listFrequenceSYN))/2
+	print("Valeur standard  "+str(median(listFrequenceSYN)))
+
+
+def print_ACKList():
+	print("listFrequenceACK")
+	print(listFrequenceACK)
 
 
 def print_FTPList():
     print("listFrequenceFTPPassword")
     print(listFrequenceFTPPassword)
-
     #maxNmbSYN = max(listFrequenceSYN)
     #print("Max is"+str(maxNmbSYN))
-    for freFTP in listFrequenceFTPPassword:
-        print(str(freFTP))
 
 
 
 
 
+#Tracer le graphe sur le ploty
 def line_plots(name):
     id=0
     idFTP=0
 
     #dataset = {'time': [],'SYNx':[]}
-    dataset = {'time': [],'timeFTP':[], 'rx': [],'SYNx':[],'FTPx':[]}
+    dataset = {'time': [],'timeFTP':[], 'px': [],'SYNx':[],'ACKx':[],'FTPx':[]}
 
     for fre in listFrequence:
     	dataset['time'].append(id)
-    	dataset['rx'].append(fre)
+    	dataset['px'].append(fre)
     	id +=ecartSensibleSYN
 
-    for freSYN in listFrequenceSYN:
-    	dataset['SYNx'].append(freSYN)
 
     for freFTP in listFrequenceFTPPassword:
         dataset['timeFTP'].append(idFTP)
         dataset['FTPx'].append(freFTP)
         idFTP+=ecartSensibleFTP
 
+    for freSYN in listFrequenceSYN:
+    	dataset['SYNx'].append(freSYN)
+
+    for freACK in listFrequenceACK:
+    	dataset['ACKx'].append(freACK)
+
     data_g = []
     tr_rx = go.Scatter(
         x = dataset['time'],
-        y = dataset['rx'],
-        name = 'rx')
+        y = dataset['px'],
+        name = 'px')
 
     data_g.append(tr_rx)
-
 
     tr_SYNx = go.Scatter(
         x = dataset['time'],
@@ -315,6 +391,14 @@ def line_plots(name):
         name = 'SYNx')
 
     data_g.append(tr_SYNx)
+
+
+    tr_ACKx = go.Scatter(
+        x = dataset['time'],
+        y = dataset['ACKx'],
+        name = 'ACKx')
+
+    data_g.append(tr_ACKx)
 
 
     tr_FTPx = go.Scatter(
@@ -329,7 +413,7 @@ def line_plots(name):
 
 
     layout = go.Layout(title="Nombre de paquets par seconde",
-        xaxis={'title':'time'}, yaxis={'title':'value'})
+        xaxis={'title':'time'}, yaxis={'title':'Frequence'})
     fig = go.Figure(data=data_g, layout=layout)
     pltoff.plot(fig, filename=name)
 
@@ -337,12 +421,12 @@ def line_plots(name):
 
 
 if __name__=='__main__':
-    print('gogogogo======================')
-    nameFile = "line_plots.html"
-    line_plots(nameFile)
-    print_SYNList()
-    print_FTPList()
-
+	print('gogogogo======================')
+	nameFile = "line_plots.html"
+	line_plots(nameFile)
+	print_SYNList()
+	print_ACKList()
+	print_FTPList()
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #SYN de yu heng
