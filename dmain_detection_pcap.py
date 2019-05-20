@@ -26,17 +26,17 @@ prochainTime = startTime+ecartSensibleSYN
 startTimeFTP=packets[0].time
 ecartSensibleFTP=4
 prochainTimeFTP = startTimeFTP+ecartSensibleFTP
+cmpFTPPassword = 0
+nmbPaquetFTPPassword = 0
+listFrequenceFTPPassword = []
 
 
 
-
-
-deuxiemeCaptureTime = packets[1].time
 start = time.time()
+
 
 lengthPackets = len(packets)
 i = 0
-iSYN = 1
 cmp = 0
 nmbPaquet = 0
 listFrequence = []
@@ -52,15 +52,12 @@ cmpACK = 0
 listFrequenceACK = []
 
 
-cmpFTPPassword = 0
-nmbPaquetFTPPassword = 0
-listFrequenceFTPPassword = []
 
 
-maxNmbSYNApp=0
+
 meanNmbSYN=0.0
 varianceNmbSYN=0.0
-nmbStandardApp =0.0
+
 
 
 
@@ -339,8 +336,8 @@ def print_SYNList():
 	print("Variance is  "+str(dev(listFrequenceSYN,mean(listFrequenceSYN))))
 	print("Valeur au milieu is  "+str(median(listFrequenceSYN)))
 
-	nmbStandard = (mean(listFrequenceSYN)+median(listFrequenceSYN))/2
-	print("Valeur standard  "+str(median(listFrequenceSYN)))
+	#nmbStandard = (mean(listFrequenceSYN)+median(listFrequenceSYN))/2
+	#print("Valeur standard SYN detection "+str(median(listFrequenceSYN)))
 
 
 def print_ACKList():
@@ -357,7 +354,7 @@ def print_FTPList():
 
 def detecter_SYNAttack(nmbStandard):
     if(mean(listFrequenceSYN)-mean(listFrequenceACK)>50):
-        if (median(listFrequenceSYN)+mean(listFrequenceSYN))/2-nmbStandard>=5*nmbStandardApp and max(listFrequenceSYN)>80 or max(listFrequenceSYN) - min(listFrequenceSYN)>300:
+        if (median(listFrequenceSYN)+mean(listFrequenceSYN))/2-nmbStandard>=5*nmbStandard and max(listFrequenceSYN)>80 or max(listFrequenceSYN) - min(listFrequenceSYN)>300:
         	print("###############################")
         	print("#########                 #####")
         	print("######### ATTACK SYN Flood #############")
