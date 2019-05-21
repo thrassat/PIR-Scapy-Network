@@ -9,7 +9,7 @@ import plotly.graph_objs as go
 
 
 
-packets = rdpcap('learning.pcap')
+packets = rdpcap('ftpAttack.pcap')
 startCaptureTime = packets[0].time
 
 startTime=packets[0].time
@@ -240,8 +240,7 @@ for packet in packets:
 			while (packets[i].time>=prochainTimeFTP):
 				vide = 0
 
-				listFrequenceftp.append(vide)
-				print(" ************Capter        "+str(listFrequenceftp[cmp])+" paquets entre  "+str(startTimeFTP)+ " s et  "+str(prochainTimeFTP)+ " s ***********")
+				#print(" ************Capter        "+str(listFrequenceFTPPassword[cmpFTPPassword])+" paquets entre  "+str(startTimeFTP)+ " s et  "+str(prochainTimeFTP)+ " s ***********")
 
 				startTimeFTP=prochainTimeFTP
 				prochainTimeFTP+=ecartSensibleFTP
@@ -279,13 +278,13 @@ for packet in packets:
 
 		else:
 			print(i)
-		SecondTime = packets[i].time
+		#SecondTime = packets[i].time
 
-		print("Protocole is  "+str(packets[i].proto))
-		print("Maintenant ce paquet son TIME IS "+ str(packet.time))
-		print("TIME IS "+ str(SecondTime-FirstTime))
-		print("Source is "+packet[IP].src)
-		print("Desti is "+packet[IP].dst)
+		#print("Protocole is  "+str(packets[i].proto))
+		#print("Maintenant ce paquet son TIME IS "+ str(packet.time))
+		#print("TIME IS "+ str(SecondTime-FirstTime))
+		#print("Source is "+packet[IP].src)
+		#print("Desti is "+packet[IP].dst)
 		print("******END*******")
 
 		print("****************")
@@ -381,6 +380,7 @@ def line_plots(name):
     tr_rx = go.Scatter(
         x = dataset['time'],
         y = dataset['px'],
+		text='Nmb de paquets /1s',
         name = 'px')
 
     data_g.append(tr_rx)
@@ -388,6 +388,7 @@ def line_plots(name):
     tr_SYNx = go.Scatter(
         x = dataset['time'],
         y = dataset['SYNx'],
+		text='Nmb de paquets SYN /1s',
         name = 'SYNx')
 
     data_g.append(tr_SYNx)
@@ -396,6 +397,7 @@ def line_plots(name):
     tr_ACKx = go.Scatter(
         x = dataset['time'],
         y = dataset['ACKx'],
+		text='Nmb de paquets ACK par /1s',
         name = 'ACKx')
 
     data_g.append(tr_ACKx)
@@ -404,6 +406,7 @@ def line_plots(name):
     tr_FTPx = go.Scatter(
         x = dataset['timeFTP'],
         y = dataset['FTPx'],
+		text='Nmb de paquets FTP par '+str(ecartSensibleFTP)+"s",
         name = 'FTPx')
 
     data_g.append(tr_FTPx)
