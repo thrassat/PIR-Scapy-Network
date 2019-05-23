@@ -13,7 +13,7 @@ import plotly.graph_objs as go
     #            print()
 
 
-packets = rdpcap('TracePcap/SYN.pcap')
+packets = rdpcap('TracePcap/SYNSample.pcap')
 startCaptureTime = packets[0].time
 
 startTime=packets[0].time

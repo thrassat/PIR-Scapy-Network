@@ -8,8 +8,8 @@ import plotly.graph_objs as go
 
 
 
-
-packets = rdpcap('ftpAttack.pcap')
+#Le fichier qu'on va etudier
+packets = rdpcap('TracePcap/SYN.pcap')
 startCaptureTime = packets[0].time
 
 startTime=packets[0].time
@@ -24,34 +24,31 @@ ecartSensibleFTP=4
 prochainTimeFTP = startTimeFTP+ecartSensibleFTP
 
 
-
-
-
 deuxiemeCaptureTime = packets[1].time
 start = time.time()
 
+#Les parametre pour les paquets TCP
 lengthPackets = len(packets)
 i = 0
-iSYN = 1
 cmp = 0
 nmbPaquet = 0
 listFrequence = []
 
-
+#Les parametre pour les paquets de SYN
+iSYN = 1
 cmpSYN = 0
 nmbPaquetSYN = 0
 listFrequenceSYN = []
-
+#Les parametre pour les paquets de ACK
 nmbPaquetACK = 0
 cmpACK = 0
 listFrequenceACK = []
-
-
+#Les parametre pour les paquets de FTPPassword
 cmpFTPPassword = 0
 nmbPaquetFTPPassword = 0
 listFrequenceFTPPassword = []
 
-
+#Les parametres pour l'analyse des data
 maxNmbSYNApp=0
 meanNmbSYN=0.0
 varianceNmbSYN=0.0
@@ -66,53 +63,32 @@ nmbStandardApp =0.0
 
 
 
-print("Length  "+str(lengthPackets))
+#print("Length  "+str(lengthPackets))
 
 
 for packet in packets:
-	#print("TYPE  "+str(type(startCaptureTime)))
-	#print("TYPE  "+str(type(packet.time)))
-	#print("TYPE  "+str(type(start)))
-	#print("TYPE  "+str(type(time.time() - start)))
-	#print("TYPE  "+str(type(packet.time - startCaptureTime)))
-
-
-
+	#On parcourt tous les paquets jusqu'a la derniere packet
 	while (time.time() - start) < packet.time - startCaptureTime:
 		pass
-
-
-
-
-	#print(" ++++++++++++++++++time now        "+str(packet.time))
-
-	#Detecter tous les 0.05s		#
-	#if  packet.time-startTime >= 1:
-	#	listFrequence.append(i)
-	#	if cmp>=1:
-	#		print(" ************Capter        "+str(i-listFrequence[cmp-1])+" paquets en  "+str( packet.time-startTime)+ " s")
-	#		listFrequence.append(i-listFrequence[cmp-1])
-	#	startTime=packets[i].time
-	#	cmp+=1
 
 	print("******START*****"  )
 	print("****************")
 	print("****************")
 
+	#On traite que le spackets TCP, toute la partie dessous est sous cette condition
 	if TCP in packet :
-		F = packet['TCP'].flags    # this should give you an integer
+		F = packet['TCP'].flags
 		Payload = packet['TCP'].payload
 		print("flags is "+str(F))
 
 
 		if  i<lengthPackets-1 and  packets[i].time<=prochainTime and packets[i].time>=startTime :
-			#Juste la 1ere fois, le nmb de paquets
-
+			#Enregistrer le nmb de paquets TCP
 			print(" ***Capter juste un paquet normal "  )
 			print(" ***No. "+str(nmbPaquet)+" dans l'intervalle"  )
 			nmbPaquet+=1
 
-
+			# SYN / ACK
 			if F & 'A' and F & 'S':
 				print('')
 				print("+++++++++++++++++++++Get  SYN / ACK  ++++++++++++++++"+ " Compteur  is "+str(i))
@@ -120,12 +96,12 @@ for packet in packets:
 				print(" ***No. "+str(nmbPaquetSYN)+"SYN dans l'intervalle"  )
 				#nmbPaquetSYN+=1
 				#nmbPaquetACK+=1
-
+			# ACK. activer le Compteur de ACK
 			elif F & 'A':
 				print('')
 				print("Get thr ACK "+"Compteur  is "+str(i))
 				nmbPaquetACK+=1
-
+			# SYN activer le compteur de SYN
 			elif F & 'S':
 				print('')
 				print("+++++++++++++++++++++++++Get SYN ++++++++++++++++"+ " Compteur  is "+str(i))
@@ -135,8 +111,9 @@ for packet in packets:
 			else:
 				print('Other Flag')
 
-
+		#Si un packet depasse l'intervalle, on va enregistrer dans la liste
 		elif packets[i].time>=prochainTime and packets[i].time>=startTime:
+			#Mettre le compteur dans la liste de packet TCP
 			listFrequence.append(nmbPaquet)
 			print("*********************************")
 			print(" ************Capter        "+str(listFrequence[cmp])+" paquets entre  "+str(startTime)+ " s et  "+str(prochainTime)+ " s ************")
@@ -147,6 +124,7 @@ for packet in packets:
 			# Part SYN
 			listFrequenceSYN.append(nmbPaquetSYN)
 			print("Capter  "+str(listFrequenceSYN[cmpSYN])+"SYN "+ " $$$$$$$$")
+			# Si ce packet est SYN, on met le compteur a 1, sinon c'est juste un packet TCP mais avec d'autres flag
 			if F & 'S':
 				nmbPaquetSYN=1
 			else :
@@ -162,12 +140,10 @@ for packet in packets:
 				nmbPaquetACK=0
 			cmpACK+=1
 
-
-
-
+			#la fenetre glissante sur l'intervalle de temps, startTime et prochainTime, jusqu'a la son TIME est plus petit que la prochaineTime
 			while (packets[i].time>=prochainTime):
 				vide = 0
-
+				#Dans ces intervalles, il n'y aucun de packet tombe la-dessus
 				listFrequence.append(vide)
 				print(" ************Capter        "+str(listFrequence[cmp])+" paquets entre  "+str(startTime)+ " s et  "+str(prochainTime)+ " s ***********")
 				nmbPaquet=1
@@ -182,6 +158,7 @@ for packet in packets:
 					nmbPaquetSYN=1
 				else :
 					nmbPaquetSYN=0
+				#Indice de la liste listFrequenceSYN va incrementer aussi
 				cmpSYN+=1
 
 				##Part ACK
@@ -191,42 +168,27 @@ for packet in packets:
 					nmbPaquetACK=1
 				else :
 					nmbPaquetACK=0
+				#Indice de la liste listFrequenceSYN va incrementer aussi
 				cmpACK+=1
-
-
-
-
-
 		else :
 			print("ERROR")
 
 
-
-
-
-
-	    #
+	    ############
 	    #Part pour FTPPassword
-	    #
-	    #
+	    ############
+	    ###########3
 		if  i<lengthPackets-1 and  packets[i].time<=prochainTimeFTP and packets[i].time>=startTimeFTP :
-
-
 
 			if "Password required for" in (str(Payload)):
 				print('')
 				print("+++++++++++++++++++++++++Get FTPPassword ++++++++++++++++"+ " Compteur  is "+str(i))
 				print('')
 				nmbPaquetFTPPassword+=1
-
-
-
 		elif packets[i].time>=prochainTimeFTP and packets[i].time>=startTimeFTP:
 
 			startTimeFTP=prochainTimeFTP
 			prochainTimeFTP+=ecartSensibleFTP
-
-
 			# Part FTPPassword
 			listFrequenceFTPPassword.append(nmbPaquetFTPPassword)
 			print("Capter  "+str(listFrequenceFTPPassword[cmpFTPPassword])+"FTPPassword "+ " $$$$$$$$")
@@ -234,27 +196,23 @@ for packet in packets:
 				nmbPaquetFTPPassword=1
 			else :
 				nmbPaquetFTPPassword=0
+			# Le compteur pour les packets de FTPPassword
 			cmpFTPPassword+=1
 
 
 			while (packets[i].time>=prochainTimeFTP):
 				vide = 0
-
-				#print(" ************Capter        "+str(listFrequenceFTPPassword[cmpFTPPassword])+" paquets entre  "+str(startTimeFTP)+ " s et  "+str(prochainTimeFTP)+ " s ***********")
-
 				startTimeFTP=prochainTimeFTP
 				prochainTimeFTP+=ecartSensibleFTP
-
-
-
-
 				##Part FTPPassword
 				listFrequenceFTPPassword.append(vide)
 				print(" Capter   "+str(listFrequenceFTPPassword[cmpFTPPassword])+"FTPPassword "+  " $$$$$$$$$$")
+				# Si ce packet est FTP, on met le compteur a 1, sinon c'est juste un packet TCP mais avec d'autres flag
 				if "Password required for" in (Payload):
 					nmbPaquetFTPPassword=1
 				else :
 					nmbPaquetFTPPassword=0
+				#Indice de la liste listFrequenceFTPPassword va incrementer aussi
 				cmpFTPPassword+=1
 
 
@@ -264,27 +222,14 @@ for packet in packets:
 
 
 
-
-
-
-
-
-
-
+		#L'indice de la liste des packets TCP incremente chaque boucle
 		FirstTime = packets[i].time
 		if i<lengthPackets-1:
 			print("Cmp is "+str(i))
 			i += 1
-
 		else:
 			print(i)
-		#SecondTime = packets[i].time
 
-		#print("Protocole is  "+str(packets[i].proto))
-		#print("Maintenant ce paquet son TIME IS "+ str(packet.time))
-		#print("TIME IS "+ str(SecondTime-FirstTime))
-		#print("Source is "+packet[IP].src)
-		#print("Desti is "+packet[IP].dst)
 		print("******END*******")
 
 		print("****************")
@@ -350,18 +295,19 @@ def print_FTPList():
 
 
 
-
+###################
 #Tracer le graphe sur le ploty
+###################
 def line_plots(name):
     id=0
     idFTP=0
 
     #dataset = {'time': [],'SYNx':[]}
-    dataset = {'time': [],'timeFTP':[], 'px': [],'SYNx':[],'ACKx':[],'FTPx':[]}
+    dataset = {'time': [],'timeFTP':[], 'TCPx': [],'SYNx':[],'ACKx':[],'FTPx':[]}
 
     for fre in listFrequence:
     	dataset['time'].append(id)
-    	dataset['px'].append(fre)
+    	dataset['TCPx'].append(fre)
     	id +=ecartSensibleSYN
 
 
@@ -379,9 +325,9 @@ def line_plots(name):
     data_g = []
     tr_rx = go.Scatter(
         x = dataset['time'],
-        y = dataset['px'],
+        y = dataset['TCPx'],
 		text='Nmb de paquets /1s',
-        name = 'px')
+        name = 'TCPx')
 
     data_g.append(tr_rx)
 
@@ -415,7 +361,7 @@ def line_plots(name):
 
 
 
-    layout = go.Layout(title="Nombre de paquets par seconde",
+    layout = go.Layout(title="Frequence of packets",
         xaxis={'title':'time'}, yaxis={'title':'Frequence'})
     fig = go.Figure(data=data_g, layout=layout)
     pltoff.plot(fig, filename=name)
