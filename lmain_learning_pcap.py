@@ -2,11 +2,12 @@ from scapy.all import *
 import time
 import plotly.offline as pltoff
 import plotly.graph_objs as go
+import settings
 
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #ftp brute froce a recup
 
-
+settings.init()
 
 #Le fichier qu'on va etudier
 packets = rdpcap('TracePcap/bruteforceFTP.pcap')
@@ -39,6 +40,11 @@ iSYN = 1
 cmpSYN = 0
 nmbPaquetSYN = 0
 listFrequenceSYN = []
+
+##############
+
+##############
+
 #Les parametre pour les paquets de ACK
 nmbPaquetACK = 0
 cmpACK = 0
@@ -47,7 +53,6 @@ listFrequenceACK = []
 cmpFTPPassword = 0
 nmbPaquetFTPPassword = 0
 listFrequenceFTPPassword = []
-nmbStandardFTP = 0
 
 
 #Les parametres pour l'analyse des data
@@ -55,14 +60,6 @@ maxNmbSYNApp=0
 meanNmbSYN=0.0
 varianceNmbSYN=0.0
 nmbStandardApp =0.0
-
-
-
-
-
-
-
-
 
 
 #print("Length  "+str(lengthPackets))
@@ -273,14 +270,18 @@ def median(numbers):
 def print_SYNList():
 	print("listFrequenceSYN")
 	print(listFrequenceSYN)
-	maxNmbSYN = max(listFrequenceSYN)
-	print("Max is"+str(maxNmbSYN))
+	settings.maxFreqSyn = max(listFrequenceSYN)
+	settings.minFreqSyn = min(listFrequenceSYN)
+	print("Max is"+str(settings.maxFreqSyn))
+	print("Min is "+str(settings.minFreqSyn))
 	print("Valeur moyenne  is "+str(mean(listFrequenceSYN)))
 	print("Variance is  "+str(dev(listFrequenceSYN,mean(listFrequenceSYN))))
 	print("Valeur au milieu is  "+str(median(listFrequenceSYN)))
+	
+	
 
-	nmbStandard = (mean(listFrequenceSYN)+median(listFrequenceSYN))/2
-	print("Valeur standard  "+str(nmbStandard))
+	settings.nmbStandard = (mean(listFrequenceSYN)+median(listFrequenceSYN))/2
+	print("Valeur standard  "+str(settings.nmbStandard))
 
 
 def print_ACKList():
@@ -291,8 +292,10 @@ def print_ACKList():
 def print_FTPList():
 	print("listFrequenceFTPPassword")
 	print(listFrequenceFTPPassword)
-	nmbStandardFTP = (mean(listFrequenceFTPPassword)+median(listFrequenceFTPPassword))/2
-	print("Valeur standard  "+str(nmbStandardFTP))
+	settings.maxFreqFTP = max(listFrequenceFTPPassword)
+	settings.minFreqFTP = min(listFrequenceFTPPassword)
+	settings.nmbStandardFTP = (mean(listFrequenceFTPPassword)+median(listFrequenceFTPPassword))/2
+	print("Valeur standard  "+str(settings.nmbStandardFTP))
 
 ###################
 #Tracer le graphe sur le ploty
@@ -368,6 +371,7 @@ def line_plots(name):
 
 
 
+
 if __name__=='__main__':
 	print('gogogogo======================')
 	nameFile = "line_plots.html"
@@ -375,6 +379,13 @@ if __name__=='__main__':
 	print_SYNList()
 	print_ACKList()
 	print_FTPList()
+	print("nmbStantard "+str(settings.nmbStandard))
+	print("minFreqSyn "+str(settings.minFreqSyn))
+	print("maxFreqSyn "+str(settings.maxFreqSyn))
+	print("nmbStandardFTP "+str(settings.nmbStandardFTP))
+	print("minFreqFTP "+str(settings.minFreqFTP))
+	print("maxFreqFTP "+str(settings.maxFreqFTP))
+	settings.write()
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #SYN de yu heng

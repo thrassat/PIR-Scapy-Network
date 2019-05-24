@@ -3,6 +3,7 @@ from scapy.all import *
 import time
 import plotly.offline as pltoff
 import plotly.graph_objs as go
+import settings
 
 
     #ping of death ?
@@ -20,6 +21,18 @@ startTime=packets[0].time
 ecartSensibleSYN=1
 prochainTime = startTime+ecartSensibleSYN
 
+#fetch the values calculated during the learning phase
+#########################################
+parametersAppr = settings.getParameters()
+#SYN Flood
+nmbStandard=float(parametersAppr[0])
+minFreqSyn=int(parametersAppr[1])
+maxFreqSyn=int(parametersAppr[2])
+#FTP bruteforce
+nmbStandardFTP=float(parametersAppr[3])
+minFreqFTP=int(parametersAppr[4])
+maxFreqFTP=int(parametersAppr[5])
+#########################################
 
 
 
@@ -29,10 +42,7 @@ prochainTimeFTP = startTimeFTP+ecartSensibleFTP
 cmpFTPPassword = 0
 nmbPaquetFTPPassword = 0
 listFrequenceFTPPassword = []
-nmbStandardFTP = float(input(" Entrer le nombre standard de frequence de passwordFTP/s : "))
-maxFreqFTPApprentissage = float(input(" Entrer le nombre max de passwordFTP/s : "))
-minFreqFTPApprentissage = float(input(" Entrer le nombre min de passwordFTP/sec : "))
-ecartMinMaxFTPAppr = maxFreqFTPApprentissage - minFreqFTPApprentissage
+ecartMinMaxFTPAppr = maxFreqFTP - minFreqFTP
 
 
 start = time.time()
@@ -49,10 +59,7 @@ listFrequence = []
 cmpSYN = 0
 nmbPaquetSYN = 0
 listFrequenceSYN = []
-nmbStandard = float(input(" Entrer le nombre standard de syn/sec : "))
-maxFreqSynApprentissage = float(input(" Entrer le nombre max de syn/sec : "))
-minFreqSynApprentissage = float(input(" Entrer le nombre min de syn/sec : "))
-ecartMinMaxSynAppr = maxFreqSynApprentissage - minFreqSynApprentissage
+ecartMinMaxSynAppr = maxFreqSyn - minFreqSyn
 
 nmbPaquetACK = 0
 cmpACK = 0
@@ -326,7 +333,7 @@ def detecter_SYNAttack():
 	if(mean(listFrequenceSYN)-mean(listFrequenceACK)>50):
 		nmbStandardCalcule=(median(listFrequenceSYN)+mean(listFrequenceSYN))/2
 		ecartMinMaxDetecte = max(listFrequenceSYN) - min(listFrequenceSYN)
-		if (nmbStandardCalcule>=6*nmbStandard) and (max(listFrequenceSYN) >= maxFreqSynApprentissage) and (ecartMinMaxDetecte>=ecartMinMaxSynAppr):
+		if (nmbStandardCalcule>=6*nmbStandard) and (max(listFrequenceSYN) >= maxFreqSyn) and (ecartMinMaxDetecte>=ecartMinMaxSynAppr):
 			print("###############################")
 			print("#########                 #####")
 			print("######### ATTACK SYN Flood #############")
@@ -352,7 +359,7 @@ def detecter_SYNAttack():
 def detecter_FTPbruteforce():
 	nmbStandardCalcule=median(listFrequenceFTPPassword)+mean(listFrequenceFTPPassword)/2
 	ecartMinMaxDetecte = max(listFrequenceFTPPassword) - min(listFrequenceFTPPassword)
-	if nmbStandardCalcule>=6*nmbStandard and max(listFrequenceFTPPassword) > maxFreqFTPApprentissage and ecartMinMaxDetecte > ecartMinMaxFTPAppr:
+	if nmbStandardCalcule>=6*nmbStandardFTP and max(listFrequenceFTPPassword) > maxFreqFTP and ecartMinMaxDetecte > ecartMinMaxFTPAppr:
 		print("###############################")
 		print("#########                 #####")
 		print("######### ATTACK FTP Bruteforce #############")
@@ -451,5 +458,11 @@ if __name__=='__main__':
 	print_FTPList()
 	detecter_SYNAttack()
 	detecter_FTPbruteforce()
+	print("nmbStantard "+str(nmbStandard))
+	print("minFreqSyn "+str(minFreqSyn))
+	print("maxFreqSyn "+str(maxFreqSyn))
+	print("nmbStandardFTP "+str(nmbStandardFTP))
+	print("minFreqFTP "+str(minFreqFTP))
+	print("maxFreqFTP "+str(maxFreqFTP))
 	
 	

@@ -34,3 +34,9 @@ dping_detection_tpsreel.py
 SUR PCAP : 
 A faire tourner sur le fichier 'learning.pcap' généré par en hase de learning
 dmain_detection_pcap.py
+
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::AUTRE:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+settings.py : script utilisé pour stocker les valeurs mesurées, afin qu'elles soient utilisables par tous les scripts.
+
