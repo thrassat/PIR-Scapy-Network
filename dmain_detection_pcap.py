@@ -13,7 +13,7 @@ import plotly.graph_objs as go
     #            print()
 
 
-packets = rdpcap('TracePcap/SYNSample.pcap')
+packets = rdpcap('TracePcap/bruteforceFTP.pcap')
 startCaptureTime = packets[0].time
 
 startTime=packets[0].time
@@ -29,7 +29,10 @@ prochainTimeFTP = startTimeFTP+ecartSensibleFTP
 cmpFTPPassword = 0
 nmbPaquetFTPPassword = 0
 listFrequenceFTPPassword = []
-
+nmbStandardFTP = float(input(" Entrer le nombre standard de frequence de passwordFTP/s : "))
+maxFreqFTPApprentissage = float(input(" Entrer le nombre max de passwordFTP/s : "))
+minFreqFTPApprentissage = float(input(" Entrer le nombre min de passwordFTP/sec : "))
+ecartMinMaxFTPAppr = maxFreqFTPApprentissage - minFreqFTPApprentissage
 
 
 start = time.time()
@@ -42,10 +45,14 @@ nmbPaquet = 0
 listFrequence = []
 
 
+
 cmpSYN = 0
 nmbPaquetSYN = 0
 listFrequenceSYN = []
-nmbStandard = float(input(" Entrer la moyenne de frequence de syn/sec : "))
+nmbStandard = float(input(" Entrer le nombre standard de syn/sec : "))
+maxFreqSynApprentissage = float(input(" Entrer le nombre max de syn/sec : "))
+minFreqSynApprentissage = float(input(" Entrer le nombre min de syn/sec : "))
+ecartMinMaxSynAppr = maxFreqSynApprentissage - minFreqSynApprentissage
 
 nmbPaquetACK = 0
 cmpACK = 0
@@ -57,13 +64,6 @@ listFrequenceACK = []
 
 meanNmbSYN=0.0
 varianceNmbSYN=0.0
-
-
-
-
-
-
-
 
 
 
@@ -163,10 +163,6 @@ for packet in packets:
                         else :
                                 nmbPaquetACK=0
                         cmpACK+=1
-
-
-
-
                         while (packets[i].time>=prochainTime):
                                 vide = 0
 
@@ -195,18 +191,8 @@ for packet in packets:
                                         nmbPaquetACK=0
                                 cmpACK+=1
 
-
-
-
-
                 else:
                         print("ERROR")
-
-
-
-
-
-
 
             #
             #Part pour FTPPassword
@@ -238,8 +224,6 @@ for packet in packets:
                         else :
                                 nmbPaquetFTPPassword=0
                         cmpFTPPassword+=1
-
-
                         while (packets[i].time>=prochainTimeFTP):
                                 vide = 0
 
@@ -248,11 +232,7 @@ for packet in packets:
 
                                 startTimeFTP=prochainTimeFTP
                                 prochainTimeFTP+=ecartSensibleFTP
-
-
-
-
-                            ##Part FTPPassword
+                         ##Part FTPPassword
                                 listFrequenceFTPPassword.append(vide)
                                 print(" Capter   "+str(listFrequenceFTPPassword[cmpFTPPassword])+"FTPPassword "+  " $$$$$$$$$$")
                                 if "Password required for" in (Payload):
@@ -264,16 +244,6 @@ for packet in packets:
 
                 else:
                         print("ERROR")
-
-
-
-
-
-
-
-
-
-
 
                 FirstTime = packets[i].time
                 if i<lengthPackets-1:
@@ -352,25 +322,50 @@ def print_FTPList():
     #print("Max is"+str(maxNmbSYN))
 
 
-def detecter_SYNAttack(nmbStandard):
-    if(mean(listFrequenceSYN)-mean(listFrequenceACK)>50):
-        if (median(listFrequenceSYN)+mean(listFrequenceSYN))/2-nmbStandard>=5*nmbStandard and max(listFrequenceSYN)>80 or max(listFrequenceSYN) - min(listFrequenceSYN)>300:
-        	print("###############################")
-        	print("#########                 #####")
-        	print("######### ATTACK SYN Flood #############")
-        	print("#########      DETECTE     ##############")
-        	print("#########                 #####")
-        	print("###############################")
-    else:
-        	print("###############################")
-        	print("#########                 #####")
-        	print("#########    ATTACK SYN Flood #############")
-        	print("#########    NON  DETECTE     ##############")
-        	print("#########                 #####")
-        	print("###############################")
+def detecter_SYNAttack():
+	if(mean(listFrequenceSYN)-mean(listFrequenceACK)>50):
+		nmbStandardCalcule=(median(listFrequenceSYN)+mean(listFrequenceSYN))/2
+		ecartMinMaxDetecte = max(listFrequenceSYN) - min(listFrequenceSYN)
+		if (nmbStandardCalcule>=6*nmbStandard) and (max(listFrequenceSYN) >= maxFreqSynApprentissage) and (ecartMinMaxDetecte>=ecartMinMaxSynAppr):
+			print("###############################")
+			print("#########                 #####")
+			print("######### ATTACK SYN Flood #############")
+			print("#########      DETECTE     ##############")
+			print("#########                 #####")
+			print("###############################")
+		else:
+			print("###############################")
+			print("#########                 #####")
+			print("#########    ATTACK SYN Flood #############")
+			print("#########    NON  DETECTE     ##############")
+			print("#########                 #####")
+			print("###############################")
+	else:
+		print("###############################")
+		print("#########                 #####")
+		print("#########    ATTACK SYN Flood #############")
+		print("#########    NON  DETECTE     ##############")
+		print("#########                 #####")
+		print("###############################")
 
 
-
+def detecter_FTPbruteforce():
+	nmbStandardCalcule=median(listFrequenceFTPPassword)+mean(listFrequenceFTPPassword)/2
+	ecartMinMaxDetecte = max(listFrequenceFTPPassword) - min(listFrequenceFTPPassword)
+	if nmbStandardCalcule>=6*nmbStandard and max(listFrequenceFTPPassword) > maxFreqFTPApprentissage and ecartMinMaxDetecte > ecartMinMaxFTPAppr:
+		print("###############################")
+		print("#########                 #####")
+		print("######### ATTACK FTP Bruteforce #############")
+		print("#########      DETECTE     ##############")
+		print("#########                 #####")
+		print("###############################")
+	else:
+		print("###############################")
+		print("#########                 #####")
+		print("#########    ATTACK FTP Bruteforce #############")
+		print("#########    NON  DETECTE     ##############")
+		print("#########                 #####")
+		print("###############################")
 
 
 
@@ -448,10 +443,13 @@ def line_plots(name):
 
 
 if __name__=='__main__':
-    print('gogogogo======================')
-    nameFile = "line_plots.html"
-    line_plots(nameFile)
-    print_SYNList()
-    print_ACKList()
-    print_FTPList()
-    detecter_SYNAttack(nmbStandard)
+	print('gogogogo======================')
+	nameFile = "line_plots.html"
+	line_plots(nameFile)
+	print_SYNList()
+	print_ACKList()
+	print_FTPList()
+	detecter_SYNAttack()
+	detecter_FTPbruteforce()
+	
+	
