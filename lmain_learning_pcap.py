@@ -9,7 +9,7 @@ import plotly.graph_objs as go
 
 
 #Le fichier qu'on va etudier
-packets = rdpcap('TracePcap/SYN.pcap')
+packets = rdpcap('TracePcap/bruteforceFTP.pcap')
 startCaptureTime = packets[0].time
 
 startTime=packets[0].time
@@ -47,6 +47,8 @@ listFrequenceACK = []
 cmpFTPPassword = 0
 nmbPaquetFTPPassword = 0
 listFrequenceFTPPassword = []
+nmbStandardFTP = 0
+
 
 #Les parametres pour l'analyse des data
 maxNmbSYNApp=0
@@ -278,7 +280,7 @@ def print_SYNList():
 	print("Valeur au milieu is  "+str(median(listFrequenceSYN)))
 
 	nmbStandard = (mean(listFrequenceSYN)+median(listFrequenceSYN))/2
-	print("Valeur standard  "+str(median(listFrequenceSYN)))
+	print("Valeur standard  "+str(nmbStandard))
 
 
 def print_ACKList():
@@ -287,13 +289,10 @@ def print_ACKList():
 
 
 def print_FTPList():
-    print("listFrequenceFTPPassword")
-    print(listFrequenceFTPPassword)
-    #maxNmbSYN = max(listFrequenceSYN)
-    #print("Max is"+str(maxNmbSYN))
-
-
-
+	print("listFrequenceFTPPassword")
+	print(listFrequenceFTPPassword)
+	nmbStandardFTP = (mean(listFrequenceFTPPassword)+median(listFrequenceFTPPassword))/2
+	print("Valeur standard  "+str(nmbStandardFTP))
 
 ###################
 #Tracer le graphe sur le ploty
