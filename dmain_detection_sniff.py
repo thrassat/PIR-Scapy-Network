@@ -42,9 +42,9 @@ def detect(pkt):
 			if x > 0.1 :
 				print("attention, telnet_learned dépassé de ",x*100,"%")
 		if (pkt.haslayer(ICMP)):
-			if pkt.length > 2**16:
+			if pkt.length > ((2**16)-1):
 				print ()
-				print (" -----------------------------------------------------------------> SUSPICION D'ATTAQUE DE TYPE PING of DEATH <-----------------------------------------------------------------")
+				print (" --------> SUSPICION D'ATTAQUE DE TYPE PING of DEATH <-----------------------------------------------------------------")
 				print()
             
 def sniffing_pcap_telnet():
